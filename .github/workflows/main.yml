@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: miktex/miktex
-
     steps:
       - name: Run commands
       run: |
