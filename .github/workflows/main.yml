@@ -8,6 +8,7 @@ jobs:
     steps:
     - name: build pdf
     - uses: actions/checkout@v3
+    - name: run docker command miktex
     - run: |
             docker run --rm -ti \
             -v miktex:/miktex/.miktex \
