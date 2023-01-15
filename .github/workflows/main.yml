@@ -1,18 +1,37 @@
-on: [push]
+name: Build LaTeX document
+on:
+  pull_request:
+    types:
+      - closed
 
 jobs:
-  build:
+  if_merged:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    container:
-      image: miktex/miktex
     steps:
-    - name: build pdf
-      uses: actions/checkout@v3
-    - name: run docker command miktex
-      run: |
-            pdflatex main.tex
-    - name: Archive pdf file
-      uses: actions/upload-artifact@v3
-      with:
-        name: PDF file
-        path: ./main.pdf
+      - name: Set up Repository
+        uses: actions/checkout@v3
+      - name: Compile Latex
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: main.tex
+      - name: Create Release
+        id: create_release
+        uses: actions/create_release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload release file
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./main.pdf
+          asset_name: main.pdf
+          asset_content_type: pdf
