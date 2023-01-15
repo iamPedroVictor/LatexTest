@@ -1,0 +1,18 @@
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: miktex/miktex
+
+    steps:
+      - name: Run commands
+      run: |
+            ls .
+
