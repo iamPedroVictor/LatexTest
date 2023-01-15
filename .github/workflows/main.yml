@@ -6,7 +6,18 @@ jobs:
     container:
       image: miktex/miktex
     steps:
-    - name: Run commands
-      run: |
-            ls .
-
+    - uses: actions/checkout@v3
+    - name: build pdf
+    - run: |
+            docker run --rm -ti \
+            -v miktex:/miktex/.miktex \
+            -v $(pwd):/miktex/work \
+            -e MIKTEX_GID=$(id -g) \
+            -e MIKTEX_UID=$(id -u) \
+            miktex/miktex \
+            pdflatex main.tex
+    - name: Archive pdf file
+      uses: actions/upload-artifact@v3
+      with:
+        name: PDF file
+        path: ./main.pdf
